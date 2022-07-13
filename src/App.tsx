@@ -1,24 +1,34 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useTransition } from 'react';
 
 function App() {
+  const [name, setName] = useState<string>('');
+  const [lists, setLists] = useState<string[]>([]);
+  const [isPending, startTransition] = useTransition();
+  const LIST_SIZE: number = 10000;
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target;
+    setName(value);
+
+    startTransition(() => {
+      const dataList: string[] = [];
+      for (let i: number = 0; i < LIST_SIZE; i++) {
+        dataList.push(value);
+      }
+      setLists(dataList);
+    });
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <input type='text' value={name} onChange={handleChange} />
+      {isPending ? (
+        <div>Loading...</div>
+      ) : (
+        lists.map((list: string) => {
+          return <div key={list}>{list}</div>;
+        })
+      )}
     </div>
   );
 }
